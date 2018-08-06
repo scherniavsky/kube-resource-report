@@ -18,7 +18,7 @@ from requests_futures.sessions import FuturesSession
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from kube_resource_report import cluster_discovery, pricing, filters, __version__
+from kube_resource_report import cluster_discovery, pricing, filters, ec2sim, __version__
 
 # TODO: this should be configurable
 NODE_LABEL_SPOT = "aws.amazon.com/spot"
@@ -219,6 +219,7 @@ def query_cluster(
             "cpu": 0.5 * hourly_cost / max(user_requests["cpu"], 1),
             "memory": 0.5 * hourly_cost / max(user_requests["memory"] / ONE_GIBI, 1),
         },
+        "comparable_ec2_cost": ec2sim.calculate_comparable_ec2_cost(region, [p for ns_pod_name, p in pods.items() if ns_pod_name[0] not in system_namespaces]),
         "ingresses": [],
     }
 
